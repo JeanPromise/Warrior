@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: #141414;
+    color: #fff;
+    font-family: sans-serif;
+  }
+  h1 {
+    color: #e50914;
+    margin-bottom: 20px;
+  }
+  .top-bar {
+    margin-bottom: 20px;
+  }
+  .btn {
+    padding: 6px 12px;
+    margin: 4px 4px 4px 0;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  .btn-blue {
+    background: #2980b9;
+    color: white;
+  }
+  .btn-green {
+    background: #27ae60;
+    color: white;
+  }
+  .btn-red {
+    background: #c0392b;
+    color: white;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1c1c1c;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  th, td {
+    padding: 10px;
+    border: 1px solid #333;
+    text-align: left;
+  }
+  th {
+    background: #222;
+    color: #aaa;
+  }
+  td {
+    color: #ddd;
+  }
+  .status {
+    font-weight: bold;
+    color: #2ecc71;
+  }
+  .status.no {
+    color: #e74c3c;
+  }
+</style>
+<div class="top-bar">
+  <form method="GET" action="/admin" style="display:inline;">
+    <input type="text" name="search" placeholder="Search email..." value="{{ search }}" 
+           style="padding:6px; margin-right:10px; border-radius:4px;">
+    <button class="btn btn-blue" type="submit">Search</button>
+  </form>
+  ...
+</div>
+
+<div class="top-bar">
+  <a href="/dashboard" class="btn btn-blue">Back to Dashboard</a>
+  <form action="/admintoggle_payments" method="post" style="display:inline;">
+    {% if payments_required %}
+      <button class="btn btn-red" name="enable" value="0">Disable Payment Requirement</button>
+    {% else %}
+      <button class="btn btn-green" name="enable" value="1">Enable Payment Requirement</button>
+    {% endif %}
+  </form>
+  <a href="/admin/export" class="btn btn-green">Export Users</a>
+  <a href="/admin" class="btn btn-blue">All</a>
+  <a href="/admin?filter=paid" class="btn btn-green">Paid</a>
+  <a href="/admin?filter=unpaid" class="btn btn-red">Unpaid</a>
+</div>
+<div style="margin-top: 20px;">
+  {% if total_pages > 1 %}
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}
+        <span class="btn btn-blue">{{ p }}</span>
+      {% else %}
+        <a href="/admin?page={{ p }}&search={{ search }}" class="btn">{{ p }}</a>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<h1>User List</h1>
+<table>
+  <tr>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Paid</th>
+    <th>Actions</th>
+  </tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.email }}</td>
+    <td>{{ u.role }}</td>
+    <td class="status {% if not u.paid %}no{% endif %}">{{ 'Yes' if u.paid else 'No' }}</td>
+    <td>
+      {% if u.role != 'admin' %}
+      <form action="/admintoggle_user" method="post">
+        <input type="hidden" name="email" value="{{ u.email }}">
+        <button class="btn {% if u.paid %}btn-red{% else %}btn-green{% endif %}" name="set_paid" value="{{ 0 if u.paid else 1 }}">
+          {% if u.paid %}Revoke{% else %}Mark Paid{% endif %}
+        </button>
+      </form>
+      {% else %}
+      <span style="color:#888;">Admin</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<script>
+function toggleTheme() {
+  document.body.classList.toggle("light-mode");
+  localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
+}
+window.onload = function () {
+  if (localStorage.getItem("theme") === "light") {
+    document.body.classList.add("light-mode");
+  }
+};
+</script>
+<button onclick="toggleTheme()" style="position:fixed;bottom:20px;right:20px;"> Toggle Theme</button>
+
+<style>
+body.light-mode {
+  background: #fff !important;
+  color: #000 !important;
+}
+body.light-mode table {
+  background: #f0f0f0;
+  color: #000;
+}
+body.light-mode th {
+  background: #ccc;
+  color: #000;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Register - SaveSend Stream{% endblock %}
+{% block content %}
+<h2 style="margin-bottom: 20px;">Create Account</h2>
+
+{% if error %}
+  <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="POST" action="/register" style="max-width: 400px;">
+  <input type="email" name="email" placeholder="Email" required style="width: 100%; padding: 10px; margin-bottom: 15px;"><br>
+
+  <div style="position: relative;">
+    <input type="password" name="password" id="password" placeholder="Password" required
+           style="width: 100%; padding: 10px; margin-bottom: 10px;">
+    <button type="button" onclick="togglePassword()" 
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999;">
+      Show
+    </button>
+  </div>
+
+  <button type="submit" style="padding: 10px 20px; width: 100%;">Register</button>
+</form>
+
+<p style="margin-top: 10px;">Already have an account? <a href="/login">Login</a></p>
+
+<script>
+function togglePassword() {
+  const pw = document.getElementById("password");
+  const btn = event.target;
+  if (pw.type === "password") {
+    pw.type = "text";
+    btn.textContent = "Hide";
+  } else {
+    pw.type = "password";
+    btn.textContent = "Show";
+  }
+}
+</script>
+{% endblock %}

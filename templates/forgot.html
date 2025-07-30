@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Forgot Password - SaveSend{% endblock %}
+{% block content %}
+<h2>Forgot Password</h2>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul style="color: gold;">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<form method="POST" action="/forgot" style="max-width: 400px;">
+  <input type="email" name="email" placeholder="Enter your email" required><br>
+  <button type="submit">Send Reset Link</button>
+</form>
+
+<p style="margin-top: 10px;"><a href="/login">Back to login</a></p>
+{% endblock %}

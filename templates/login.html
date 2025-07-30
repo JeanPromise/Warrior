@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Login - Tomorrow{% endblock %}
+{% block content %}
+
+<h2 style="margin-bottom: 20px;">Sign In</h2>
+
+{% if error %}
+  <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="POST" action="/login" style="max-width: 400px;">
+  <input type="email" name="email" placeholder="Email" required
+         style="width: 100%; padding: 10px; margin-bottom: 15px; background: #1a1a1a; color: white; border: 1px solid #444;">
+
+  <div style="position: relative;">
+    <input type="password" name="password" id="password" placeholder="Password" required
+           style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+    <button type="button" onclick="togglePassword()" 
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999;">
+      Show
+    </button>
+  </div>
+
+  <button type="submit" 
+          style="padding: 10px 20px; width: 100%; background-color: #e50914; color: white; border: none; cursor: pointer;">
+    Login
+  </button>
+</form>
+
+<p style="margin-top: 15px;"><a href="/forgot" style="color: #aaa;">Forgot password?</a></p>
+<p style="margin-top: 10px;">New user? <a href="/register" style="color: #e50914;">Create account</a></p>
+
+<script>
+function togglePassword() {
+  const pw = document.getElementById("password");
+  const btn = event.target;
+  if (pw.type === "password") {
+    pw.type = "text";
+    btn.textContent = "Hide";
+  } else {
+    pw.type = "password";
+    btn.textContent = "Show";
+  }
+}
+</script>
+
+{% endblock %}

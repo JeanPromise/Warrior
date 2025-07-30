@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Tomorrow{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='media/logo.png') }}" />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#0a0a0a">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <style>
+    :root { --accent: #FFD700; }
+    body {
+      background-color: #0a0a0a;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    input::placeholder {
+      color: #ccc;
+    }
+    input, select, textarea {
+      color: black;
+    }
+    a:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="bg-black/70 backdrop-blur sticky top-0 z-50 text-white shadow">
+    <div class="flex justify-between items-center px-4 py-3 max-w-screen-xl mx-auto">
+      <div class="flex items-center gap-2 text-yellow-400 font-bold text-xl">
+        <img src="{{ url_for('static', filename='media/logo.png') }}" alt="Logo" class="h-8 w-8">
+        <a href="{{ url_for('dashboard') }}">Tomorrow</a>
+      </div>
+      <nav class="flex gap-4 text-sm md:text-base">
+        <a href="{{ url_for('music') }}">Music</a>
+        {% if session.get('user') %}
+          <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">Sign In</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="flex-1 px-4 md:px-10 py-6 max-w-screen-xl mx-auto">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-gray-400 text-sm py-6 border-t border-gray-700">
+    &copy; {{ year or 2025 }} Tomorrow Inc. All rights reserved.
+  </footer>
+
+  <!-- Password Toggle Script -->
+  <script>
+    function togglePassword(id) {
+      const field = document.getElementById(id);
+      field.type = field.type === "password" ? "text" : "password";
+    }
+  </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/static/sw.js')
+        .then(reg => console.log("✅ ServiceWorker registered", reg.scope))
+        .catch(err => console.error("❌ SW registration failed:", err));
+    });
+  }
+</script>
+
+</body>
+</html>

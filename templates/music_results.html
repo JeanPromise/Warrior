@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Search Results{% endblock %}
+{% block content %}
+<div class="p-6 max-w-4xl mx-auto">
+  <h2 class="text-2xl font-semibold mb-4 text-white">Search: "{{ query }}"</h2>
+
+  {% if results %}
+    <div class="grid md:grid-cols-3 gap-4">
+      {% for song in results %}
+      <div class="bg-gray-900 p-4 rounded-lg shadow-md">
+        <img src="{{ song.cover }}" alt="cover" class="w-full h-40 object-cover rounded mb-2">
+        <h3 class="text-lg text-white font-bold">{{ song.title }}</h3>
+        <p class="text-gray-400">{{ song.artist }}</p>
+        <audio controls class="w-full mt-2">
+          <source src="{{ song.url }}" type="audio/mpeg">
+        </audio>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-gray-400">No exact match found for that song.</p>
+  {% endif %}
+</div>
+{% endblock %}

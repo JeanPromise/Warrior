@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% block title %}Tomorrow Intro | {% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --purple-bg: #2b0059;
+    --yellow-bg: #f5c400;
+    --text-yellow: #FFD700;
+    --text-red: #e50914;
+    --text-white: #ffffff;
+    --text-black: #101010;
+    --purple: #6b1fb1;
+    --orange: #ff5722;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  #intro-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--purple-bg);
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  #particles {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--text-yellow);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--text-yellow);
+    top: 90%;
+    left: 10%;
+    animation: shoot 2s ease-out forwards;
+  }
+
+  @keyframes shoot {
+    0% { top: 90%; left: 10%; opacity: 1; }
+    80% { top: 50%; left: 50%; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .focus-ball {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: conic-gradient(from 90deg, var(--text-yellow) 0 180deg, var(--text-red) 180deg 360deg);
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+    transition: transform 1s ease, opacity 1s ease;
+    z-index: 2;
+  }
+
+  #phase1Text {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    opacity: 0;
+    display: flex;
+    gap: 0.3rem;
+  }
+
+  #whiteText {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    color: var(--text-white);
+    opacity: 0;
+    z-index: 2;
+    transition: opacity 1s ease;
+  }
+
+  .fade-out {
+    animation: fadeOut 1s forwards;
+  }
+
+  @keyframes fadeOut {
+    to { opacity: 0; }
+  }
+
+  .phase2 {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 1;
+  }
+
+  .icon {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .bounce-proud {
+    animation: proudBounce 3s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  .bounce-slow {
+    animation: proudSlide 4s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  @keyframes proudBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  @keyframes proudSlide {
+    0%, 100% { transform: rotate(-45deg) translate(0, 0); }
+    50% { transform: rotate(-45deg) translate(2px, -3px); }
+  }
+
+  .logo-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--text-black);
+  }
+</style>
+
+<div id="intro-overlay">
+  <canvas id="particles"></canvas>
+  <div class="star" id="star"></div>
+  <div class="focus-ball" id="focusBall"></div>
+
+  <!-- Animated Letters -->
+  <div id="phase1Text">
+    <span style="color:var(--text-yellow)">T</span>
+    <span style="color:var(--text-yellow)">O</span>
+    <span style="color:var(--text-yellow)">M</span>
+    <span style="color:var(--text-yellow)">O</span>
+    <span style="color:var(--text-red)">R</span>
+    <span style="color:var(--text-red)">R</span>
+    <span style="color:var(--text-red)">O</span>
+    <span style="color:var(--text-red)">W</span>
+  </div>
+
+  <!-- Fading White Text -->
+  <div id="whiteText">TOMORROW</div>
+
+  <!-- Final Logo -->
+  <div class="phase2" id="phase2">
+    <div class="icon">
+      <svg viewBox="0 0 100 100" width="100" height="100">
+        <path d="M30 10 L50 10 L50 90 Q50 95 45 100 L30 100 Z" fill="#101010"/>
+        <rect x="45" y="65" width="35" height="15" rx="5" ry="5"
+              fill="#6b1fb1"
+              transform="rotate(-45 60 72)"
+              class="bounce-slow" />
+        <circle cx="70" cy="25" r="10" fill="#ff5722" class="bounce-proud" />
+      </svg>
+    </div>
+    <div class="logo-text">TOMORROW</div>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('particles'),
+        ctx = canvas.getContext('2d');
+  let W = canvas.width = window.innerWidth,
+      H = canvas.height = window.innerHeight;
+
+  window.addEventListener('resize', () => {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  });
+
+  let particles = [];
+
+  function createParticles() {
+    for (let i = 0; i < 200; i++) {
+      const color = Math.random() < 0.7 ? 'var(--text-yellow)' : 'var(--text-red)';
+      particles.push({
+        x: W / 2,
+        y: H / 2,
+        vx: (Math.random() - 0.5) * 8,
+        vy: (Math.random() - 0.5) * 8,
+        alpha: 1,
+        color
+      });
+    }
+    requestAnimationFrame(updateParticles);
+  }
+
+  function updateParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.02;
+      if (p.alpha > 0) {
+        const c = p.color.includes('yellow') ?
+          `rgba(255,215,0,${p.alpha})` :
+          `rgba(229,9,20,${p.alpha})`;
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    });
+    particles = particles.filter(p => p.alpha > 0);
+    if (particles.length) requestAnimationFrame(updateParticles);
+  }
+
+  const star = document.getElementById('star'),
+        ball = document.getElementById('focusBall'),
+        letters = document.querySelectorAll('#phase1Text span'),
+        whiteText = document.getElementById('whiteText');
+
+  setTimeout(() => {
+    createParticles();
+    star.style.display = 'none';
+    ball.style.opacity = 1;
+    ball.style.top = '40%';
+    ball.style.left = '50%';
+  }, 2000);
+
+  setTimeout(() => {
+    ball.style.transform = 'translate(-50%,-50%) scale(1.5)';
+    ball.style.opacity = 0;
+    document.getElementById('phase1Text').style.opacity = 1;
+    letters.forEach((s, i) => {
+      setTimeout(() => { s.style.opacity = 1; }, i * 150);
+    });
+  }, 2800);
+
+  setTimeout(() => {
+    letters.forEach(s => s.style.transition = "color 1.5s ease");
+    letters.forEach(s => s.style.color = 'var(--text-white)');
+    whiteText.style.opacity = 1;
+  }, 5200);
+
+  setTimeout(() => {
+    whiteText.classList.add('fade-out');
+  }, 6800);
+
+  setTimeout(() => {
+    document.body.style.background = 'var(--yellow-bg)';
+    document.getElementById('phase2').style.opacity = 1;
+  }, 7000);
+
+  setTimeout(() => {
+    document.getElementById('intro-overlay').style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }, 9500);
+
+  setTimeout(() => {
+    const role = "{{ session.get('role') }}";
+    if (role === "admin") {
+      window.location.href = "/admin";
+    } else {
+      window.location.href = "/dashboard";
+    }
+  }, 10000);
+</script>
+{% endblock %}

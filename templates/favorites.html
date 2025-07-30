@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Favorites - Tomorrow{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 mt-6">
+  <h2 class="text-xl font-semibold mb-4">Your Favorites</h2>
+  <div id="fav-list"></div>
+</div>
+
+<script>
+  const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+  const container = document.getElementById("fav-list");
+
+  if (favs.length === 0) {
+    container.innerHTML = "<p class='text-gray-500'>You have no favorites yet.</p>";
+  } else {
+    favs.forEach(f => {
+      const el = document.createElement("div");
+      el.className = "list-box";
+      el.innerHTML = `
+        <span>${f.title}</span>
+        ${f.type === "music" ? `<audio controls src="/stream/${f.id}"></audio>` : `<a href="/watch?title=${encodeURIComponent(f.title)}">Watch</a>`}
+      `;
+      container.appendChild(el);
+    });
+  }
+</script>
+{% endblock %}

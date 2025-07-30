@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% block title %}Music - Tomorrow{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --purple: #8000ff;
+    --red: #ff0055;
+    --yellow: #ffea00;
+    --theme-a1: #1e3c72;
+    --theme-a2: #2a5298;
+    --theme-b1: #42275a;
+    --theme-b2: #734b6d;
+    --theme-c1: #141e30;
+    --theme-c2: #243b55;
+  }
+
+  html[data-theme="light"] {
+    --bg-start: var(--purple);
+    --bg-mid: var(--red);
+    --bg-end: var(--yellow);
+  }
+
+  html[data-theme="bunch-a"] {
+    --bg-start: var(--theme-a1);
+    --bg-mid: var(--theme-a2);
+    --bg-end: var(--theme-a1);
+  }
+
+  html[data-theme="bunch-b"] {
+    --bg-start: var(--theme-b1);
+    --bg-mid: var(--theme-b2);
+    --bg-end: var(--theme-b1);
+  }
+
+  html[data-theme="bunch-c"] {
+    --bg-start: var(--theme-c1);
+    --bg-mid: var(--theme-c2);
+    --bg-end: var(--theme-c1);
+  }
+
+  body {
+    background: linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+    background-size: 200% 200%;
+    animation: bg-shift 15s ease infinite;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+  }
+
+  @keyframes bg-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .music-wrapper {
+    max-width: 960px;
+    margin: auto;
+    padding-bottom: 100px;
+  }
+
+  .search-bar input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #1f1f1f;
+    color: #fff;
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.05);
+  }
+
+  .search-bar button,
+  .dark-toggle {
+    background: linear-gradient(135deg, var(--red), var(--yellow));
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+  }
+
+  .search-bar button:hover,
+  .dark-toggle:hover {
+    transform: translateY(-1px);
+  }
+
+  .theme-buttons {
+    display: none;
+    gap: 10px;
+    animation: fadeIn 0.5s ease forwards;
+    margin-bottom: 20px;
+  }
+
+  .theme-buttons.show {
+    display: flex;
+  }
+
+  .theme-btn {
+    background: #fff3;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: background 0.3s;
+  }
+
+  .theme-btn:hover {
+    background: #fff6;
+  }
+
+  .tab-button {
+    padding: 8px 16px;
+    background: #1f1f1f;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    font-weight: bold;
+    color: white;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .tab-button.active {
+    border-color: var(--yellow);
+    color: var(--yellow);
+  }
+
+  .tab-container {
+    display: flex;
+    gap: 12px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .song-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 18px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .song-card:hover {
+    box-shadow: 0 8px 28px rgba(255, 0, 85, 0.4);
+  }
+
+  .song-thumbnail {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .song-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--yellow);
+    margin-bottom: 4px;
+  }
+
+  .song-artist {
+    font-size: 1rem;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, var(--purple), var(--red));
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(128, 0, 255, 0.4);
+    transition: background 0.3s ease;
+  }
+
+  .btn:hover {
+    background: linear-gradient(135deg, var(--red), var(--yellow));
+  }
+
+  .favorite {
+    font-size: 1.6rem;
+    color: gold;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .favorite:hover {
+    transform: scale(1.2);
+  }
+
+  .source-tag {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #bbbbbb;
+    text-align: right;
+  }
+
+  .hidden { display: none !important; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="music-wrapper">
+  <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+    <form method="get" action="/music" class="search-bar" style="flex:1;">
+      <input name="query" type="text" value="{{ query or '' }}" placeholder="Search for music...">
+      <button type="submit">Search</button>
+    </form>
+    <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+      <button onclick="toggleThemeMenu()" class="dark-toggle">Toggle Theme</button>
+      <a href="/my_music" class="dark-toggle">My Music</a>
+    </div>
+  </div>
+
+  <div id="themeOptions" class="theme-buttons">
+    <button class="theme-btn" onclick="switchTheme('light')">Classic</button>
+    <button class="theme-btn" onclick="switchTheme('bunch-a')">Ocean Blue</button>
+    <button class="theme-btn" onclick="switchTheme('bunch-b')">Twilight</button>
+    <button class="theme-btn" onclick="switchTheme('bunch-c')">Deep Night</button>
+  </div>
+
+  <div class="tab-container">
+    <button class="tab-button active" onclick="switchTab('new')">New Hits</button>
+    <button class="tab-button" onclick="switchTab('top')">Top Tracks</button>
+    <button class="tab-button" onclick="switchTab('favorites')">Favorites</button>
+    <button class="tab-button" onclick="switchTab('all')">All</button>
+  </div>
+
+  <div id="songs" class="flex flex-col gap-6">
+    {% for song in results %}
+      <div class="song-card"
+           data-title="{{ song.title|lower }}"
+           data-id="{{ song.id }}"
+           data-channel="{{ song.channel|default('unknown')|lower }}"
+           data-tags="{% if 'top' in song.title|lower %}top {% endif %}{% if 'new' in song.title|lower %}new{% endif %}">
+        {% if song.thumbnail %}
+          <img src="{{ song.thumbnail }}" class="song-thumbnail" alt="Album Art">
+        {% endif %}
+        <div class="song-title">{{ song.title }}</div>
+        <div class="song-artist">by {{ song.channel or 'Unknown Artist' }}</div>
+
+        <audio controls preload="none">
+          <source src="/download_music?id={{ song.id }}&title={{ song.title | urlencode }}" type="audio/mpeg">
+        </audio>
+
+        <div class="controls">
+          <a href="/download_music?id={{ song.id }}&title={{ song.title | urlencode }}" class="btn">Download</a>
+          <span class="favorite" onclick="toggleFavorite('{{ song.title }}')">☆</span>
+        </div>
+
+        <div class="source-tag">From YouTube</div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if not results %}
+    <p style="margin-top:2rem; text-align:center;">No songs found. Try another search.</p>
+  {% endif %}
+</div>
+
+<script>
+  function toggleThemeMenu() {
+    document.getElementById("themeOptions").classList.toggle("show");
+  }
+
+  function switchTheme(themeName) {
+    document.documentElement.setAttribute("data-theme", themeName);
+    localStorage.setItem("theme", themeName);
+  }
+
+  function toggleFavorite(title) {
+    let favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+    title = title.toLowerCase();
+    if (favs.includes(title)) {
+      favs = favs.filter(t => t !== title);
+    } else {
+      favs.push(title);
+    }
+    localStorage.setItem("favorites", JSON.stringify(favs));
+    alert("Favorites updated.");
+  }
+
+  function switchTab(type) {
+    const allCards = document.querySelectorAll('.song-card');
+    const tabs = document.querySelectorAll('.tab-button');
+    const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+    tabs.forEach(tab => tab.classList.remove('active'));
+    document.querySelector(`.tab-button[onclick*="${type}"]`).classList.add('active');
+
+    allCards.forEach(card => {
+      const title = card.dataset.title;
+      const tags = card.dataset.tags || "";
+      if (type === "all") {
+        card.classList.remove("hidden");
+      } else if (type === "favorites") {
+        card.classList.toggle("hidden", !favorites.includes(title));
+      } else {
+        card.classList.toggle("hidden", !tags.includes(type));
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("theme");
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+
+    const allAudio = document.querySelectorAll("audio");
+    allAudio.forEach((audio, i) => {
+      audio.addEventListener("play", () => {
+        allAudio.forEach(a => { if (a !== audio) a.pause(); });
+      });
+      audio.addEventListener("ended", () => {
+        const next = allAudio[i + 1];
+        if (next) next.play();
+      });
+    });
+
+    switchTab("new");
+  });
+</script>
+{% endblock %}

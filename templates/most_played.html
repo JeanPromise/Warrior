@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Top Played - Tomorrow{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto px-4 mt-6">
+  <h2 class="text-xl font-semibold mb-4">Most Played Songs</h2>
+  <ul id="top-songs" class="space-y-4"></ul>
+</div>
+
+<script>
+  const plays = JSON.parse(localStorage.getItem("most_played") || "{}");
+  const songs = {{ songs_json | safe }};
+  const list = Object.entries(plays)
+    .map(([id, count]) => ({ id, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  const ul = document.getElementById("top-songs");
+
+  list.forEach((entry, i) => {
+    const song = songs.find(s => s.id === entry.id);
+    if (song) {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div class="list-box">
+          <span>#${i + 1} - ${song.title} (${entry.count} plays)</span>
+          <audio controls src="/stream/${song.id}"></audio>
+        </div>`;
+      ul.appendChild(li);
+    }
+  });
+</script>
+{% endblock %}

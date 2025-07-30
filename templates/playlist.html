@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Playlist Builder - Tomorrow{% endblock %}
+
+{% block content %}
+<style>
+  .section {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+  }
+  .song {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    margin: 10px 0;
+    padding: 10px 14px;
+    border-radius: 8px;
+  }
+  .song span {
+    color: white;
+    flex: 1;
+  }
+  .song button {
+    margin-left: 10px;
+    padding: 6px 12px;
+    background: #e50914;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .song button:hover {
+    background: #c40812;
+  }
+</style>
+
+<div class="section">
+  <h2 class="text-xl font-bold mb-4">Build Your Playlist</h2>
+  <div id="song-list"></div>
+
+  <h3 class="mt-8 text-lg font-semibold">Your Current Playlist</h3>
+  <ul id="playlist-preview" class="mt-4 text-white text-sm"></ul>
+</div>
+
+<script>
+  const songs = {{ songs_json | safe }};
+  let playlist = JSON.parse(localStorage.getItem("playlist") || "[]");
+
+  function savePlaylist() {
+    localStorage.setItem("playlist", JSON.stringify(playlist));
+    renderPreview();
+  }
+
+  function addToPlaylist(id) {
+    if (!playlist.includes(id)) {
+      playlist.push(id);
+      savePlaylist();
+    }
+  }
+
+  function removeFromPlaylist(id) {
+    playlist = playlist.filter(s => s !== id);
+    savePlaylist();
+  }
+
+  function renderSongs() {
+    const list = document.getElementById("song-list");
+    list.innerHTML = "";
+    songs.forEach(song => {
+      const el = document.createElement("div");
+      el.className = "song";
+      el.innerHTML = `
+        <span>${song.title}</span>
+        <button onclick="addToPlaylist('${song.id}')">Add</button>
+        <button onclick="removeFromPlaylist('${song.id}')">Remove</button>
+      `;
+      list.appendChild(el);
+    });
+  }
+
+  function renderPreview() {
+    const preview = document.getElementById("playlist-preview");
+    preview.innerHTML = "";
+    playlist.forEach(id => {
+      const song = songs.find(s => s.id === id);
+      if (song) {
+        const li = document.createElement("li");
+        li.textContent = song.title;
+        preview.appendChild(li);
+      }
+    });
+  }
+
+  renderSongs();
+  renderPreview();
+</script>
+<ul id="playlist-preview" class="mt-4 text-white text-sm" style="list-style:none;padding:0;"></ul>
+
+<script>
+  const preview = document.getElementById("playlist-preview");
+
+  function renderPreview() {
+    preview.innerHTML = "";
+    playlist.forEach((id, index) => {
+      const song = songs.find(s => s.id === id);
+      if (song) {
+        const li = document.createElement("li");
+        li.draggable = true;
+        li.dataset.id = id;
+        li.innerHTML = `
+          <div class="list-box" style="cursor: grab;">
+            <span>${song.title}</span>
+            <button onclick="removeFromPlaylist('${id}')">Remove</button>
+          </div>`;
+        preview.appendChild(li);
+      }
+    });
+  }
+
+  // Drag-to-reorder logic
+  let dragSrcEl = null;
+  preview.addEventListener("dragstart", e => {
+    dragSrcEl = e.target;
+    e.dataTransfer.effectAllowed = "move";
+  });
+
+  preview.addEventListener("dragover", e => e.preventDefault());
+
+  preview.addEventListener("drop", e => {
+    e.preventDefault();
+    const fromId = dragSrcEl.dataset.id;
+    const toId = e.target.closest("li").dataset.id;
+    if (fromId !== toId) {
+      const fromIndex = playlist.indexOf(fromId);
+      const toIndex = playlist.indexOf(toId);
+      playlist.splice(fromIndex, 1);
+      playlist.splice(toIndex, 0, fromId);
+      savePlaylist();
+    }
+  });
+</script>
+
+{% endblock %}

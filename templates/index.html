@@ -1,0 +1,55 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Tomorrow Music{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='media/logo.png') }}" />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#0a0a0a">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    :root { --accent: #FFD700; }
+    body {
+      background-color: #0a0a0a;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    input::placeholder {
+      color: #ccc;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="bg-black/70 backdrop-blur sticky top-0 z-50 text-white">
+    <div class="flex justify-between items-center px-4 py-3 max-w-screen-xl mx-auto">
+      <div class="flex items-center gap-2 text-yellow-400 font-bold text-xl">
+        <img src="{{ url_for('static', filename='media/logo.png') }}" alt="Logo" class="h-8 w-8">
+        <a href="/">Tomorrow Music</a>
+      </div>
+      <form method="get" action="/search_music" class="flex-grow mx-4">
+        <input name="q" type="text" placeholder="Search music..." required
+               class="w-full bg-gray-800 text-white px-4 py-2 rounded focus:outline-none">
+      </form>
+      <nav class="hidden md:flex gap-4 text-sm">
+        <a href="/music" class="hover:text-yellow-400">Music</a>
+        <a href="/logout" class="text-red-500 hover:underline">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 px-4 md:px-10 py-6 max-w-screen-xl mx-auto">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-gray-400 text-sm py-6 border-t border-gray-700">
+    &copy; {{ year or 2025 }} Tomorrow Music. All rights reserved.
+  </footer>
+
+</body>
+</html>

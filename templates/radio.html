@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Live Radio - Tomorrow{% endblock %}
+
+{% block content %}
+<div style="padding: 30px; max-width: 700px; margin: auto;">
+  <h2 class="text-2xl font-bold mb-4 text-center">Streaming Radio</h2>
+  <audio id="radio-player" controls autoplay style="width: 100%; background: #111; border-radius: 8px;">
+    <source src="https://stream.zeno.fm/4b7cps6zsxhvv" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <p class="text-center mt-2 text-gray-400">Now Playing: Zeno FM - Afrobeats</p>
+</div>
+{% endblock %}

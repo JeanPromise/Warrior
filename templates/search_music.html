@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Search — Music{% endblock %}
+
+{% block content %}
+<style>
+  .search-page { max-width: 1000px; margin: 40px auto; }
+  .search-form { display: flex; gap: 8px; margin-bottom: 24px; }
+  .search-form input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--muted); background: var(--card); color: var(--text); }
+  .search-form button { padding: 10px 16px; border: none; border-radius: 6px; background: var(--accent); color: #000; font-weight: bold; cursor: pointer; }
+
+  .error-msg { color: #f55; margin-bottom: 16px; }
+
+  .results-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .track-card {
+    background: var(--card);
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    color: var(--text);
+    padding: 10px;
+  }
+
+  .track-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  .track-card h3 {
+    font-size: 1rem;
+    margin: 12px 8px 4px;
+  }
+
+  .track-card a {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--accent);
+    color: #000;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+  }
+</style>
+
+<div class="search-page">
+  <form class="search-form" action="{{ url_for('search_music') }}" method="get">
+    <input
+      type="text"
+      name="q"
+      placeholder="Search for music…"
+      value="{{ query }}"
+      autocomplete="off"
+      required
+    />
+    <button type="submit">Search</button>
+  </form>
+
+  {% if error %}
+    <div class="error-msg">{{ error }}</div>
+  {% endif %}
+
+  {% if results %}
+    <div class="results-grid">
+      {% for track in results %}
+        <div class="track-card">
+          <img src="{{ track.thumbnail }}" alt="{{ track.title }}">
+          <h3>{{ track.title }}</h3>
+          <p>Artist: {{ track.artist }}</p>
+          <a href="{{ track.url }}" target="_blank">Listen</a>
+          <a href="{{ track.download }}" target="_blank">Download</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% if query %}
+      <p style="color: var(--muted); margin-top: 20px;">
+        No exact matches found, showing closest results for “{{ query }}”.
+      </p>
+    {% else %}
+      <p style="color: var(--muted); margin-top: 20px;">
+        Enter a title above to search.
+      </p>
+    {% endif %}
+  {% endif %}
+</div>
+
+{% endblock %}

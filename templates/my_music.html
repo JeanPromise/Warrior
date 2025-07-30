@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}My Music - Tomorrow{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    color: white;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .music-wrapper {
+    max-width: 900px;
+    margin: auto;
+    padding: 40px 20px;
+  }
+
+  .song-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .song-info {
+    flex: 1 1 auto;
+    margin-right: 10px;
+  }
+
+  .song-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  .song-meta {
+    font-size: 0.9rem;
+    color: #ccc;
+    margin-bottom: 10px;
+  }
+
+  audio {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 8px;
+  }
+
+  .actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-action {
+    background-color: #e50914;
+    color: #fff;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .back-link {
+    color: #e50914;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+</style>
+
+<script>
+  function deleteSong(filename) {
+    if (confirm("Are you sure you want to delete this song?")) {
+      fetch(`/delete_music/${filename}`, { method: "POST" })
+        .then(res => {
+          if (res.ok) window.location.reload();
+        });
+    }
+  }
+</script>
+
+<div class="music-wrapper">
+  <a href="/music" class="back-link">&larr; Back to Discover</a>
+  <h2>Your Downloads</h2>
+
+  {% if songs %}
+    {% for song in songs %}
+      <div class="song-card">
+        <div class="song-info">
+          <div class="song-title">{{ song.title }}</div>
+          <div class="song-meta">Saved Locally</div>
+          <audio controls>
+            <source src="{{ url_for('static', filename='music_downloads/' + song.filename) }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+        <div class="actions">
+          <button class="btn-action" onclick="deleteSong('{{ song.filename }}')">Delete</button>
+          <form method="post" action="/favorite_music" style="display:inline">
+            <input type="hidden" name="filename" value="{{ song.filename }}">
+            <button type="submit" class="btn-action">{% if song.favorite %}★ Unfavorite{% else %}+ Favorite{% endif %}</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>You have not downloaded any songs yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
