@@ -1,0 +1,5 @@
+Flask==2.2.5
+yt-dlp==2025.6.30
+gunicorn==21.2.0
+youtube-search-python==1.6.6
+python-dotenv
